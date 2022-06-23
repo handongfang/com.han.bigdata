@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Configuration monitorInterval="60">
+    <Properties>
+        <Property name="PropertyKey">PropertyValue</Property>
+    </Properties>
+    <!-- 配置日志追加器 -->
+    <Appenders>
+        <!-- 控制台输出 -->
+        <Console name="STDOUT">
+            <PatternLayout>
+                <!-- 输出格式 -->
+<!--                <Pattern>%d{yyyy-MM-dd HH:mm:ss,SSS} %-5p %-60c %x - %m%n</Pattern>-->
+                <Pattern>%d{yyyy-MM-dd HH:mm:ss,SSS} [%p] %c %x : %m%n</Pattern>
+            </PatternLayout>
+        </Console>
+        <!-- 滚动文件输出 -->
+        <RollingFile name="RollingFileAppender" fileName="rent-data-analyze-log" filePattern="rent-data-analyze-log.%i" append="false">
+<!--        <RollingFile name="RollingFileAppender" fileName="${sys:log.file}" filePattern="${sys:log.file}.%i" append="false">-->
+            <!-- append的作用是如果写文件之前,已经存在这个文件了,是继续追加(true), 还是清空后再写(false) -->
+            <PatternLayout>
+                <!-- 输出格式 -->
+                <Pattern>%d{yyyy-MM-dd HH:mm:ss,SSS} %-5p %-60c %x - %m%n</Pattern>
+            </PatternLayout>
+            <Policies>
+                <!-- 单个文件大小 -->
+                <SizeBasedTriggeringPolicy size="10MB"/>
+            </Policies>
+            <!-- 日志文件上限 -->
+            <DefaultRolloverStrategy max="10"/>
+        </RollingFile>
+    </Appenders>
+    <!-- 具体项目包应用日志属性 -->
+    <Loggers>
+        <!-- 项目根路径日志 -->
+        <Root level="WARN">
+            <!--<AppenderRef ref="RollingFileAppender"/>-->
+            <AppenderRef ref="STDOUT"/>
+        </Root>
+        <!-- name属性为项目包名或者类名 -->
+        <Logger name="com.han" level="INFO">
+            <!-- 如果需要单独配置Appender,就指定,否则就使用父logger的Appender-->
+            <!--<AppenderRef ref="RollingFileAppender"/>-->
+        </Logger>
+        <Logger name="org.apache" level="WARN"/>
+        <!-- level="OFF" 关闭日志 -->
+    </Loggers>
+</Configuration>
