@@ -4,9 +4,7 @@ import org.apache.hadoop.hive.ql.exec.UDF;
 
 import java.util.ArrayList;
 import java.util.Comparator;
-import java.util.Iterator;
 import java.util.List;
-import java.util.function.Consumer;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -65,19 +63,6 @@ public class ArraySortUdf extends UDF {
     }
 
     /**
-     * 指定是非数值与是非整形，默认ASC
-     *
-     * @param hiveArray
-     * @param pureNumbers
-     * @param isInteger
-     * @return
-     * @throws Exception
-     */
-    public List<String> evaluate(Object hiveArray, boolean pureNumbers, boolean isInteger) throws Exception {
-        return evaluate(hiveArray, SORTWAY, pureNumbers, isInteger);
-    }
-
-    /**
      * 指定ASC或DESC以及是非纯数值，默认非整形
      *
      * @param hiveArray
@@ -88,6 +73,19 @@ public class ArraySortUdf extends UDF {
      */
     public List<String> evaluate(Object hiveArray, String sortWay, boolean pureNumbers) throws Exception {
         return evaluate(hiveArray, sortWay, pureNumbers, ISINTEGER);
+    }
+
+    /**
+     * 指定是非数值与是非整形，默认ASC
+     *
+     * @param hiveArray
+     * @param pureNumbers
+     * @param isInteger
+     * @return
+     * @throws Exception
+     */
+    public List<String> evaluate(Object hiveArray, boolean pureNumbers, boolean isInteger) throws Exception {
+        return evaluate(hiveArray, SORTWAY, pureNumbers, isInteger);
     }
 
     /**
@@ -146,8 +144,8 @@ public class ArraySortUdf extends UDF {
             //Integer排序
             ArrayList<Integer> list = new ArrayList<>();
             //
-            for (Object strDouble : ((List<Object>) this.arrayList)) {
-                list.add(Integer.valueOf(strDouble.toString()));
+            for (Object strInteger : ((List<Object>) this.arrayList)) {
+                list.add(Integer.valueOf(strInteger.toString()));
             }
             //排序
             list.sort(c);
@@ -156,8 +154,8 @@ public class ArraySortUdf extends UDF {
             //String排序
             ArrayList<String> list = new ArrayList<>();
             //
-            for (Object strDouble : ((List<Object>) this.arrayList)) {
-                list.add(strDouble.toString());
+            for (Object str : ((List<Object>) this.arrayList)) {
+                list.add(str.toString());
             }
             //排序
             list.sort(c);
