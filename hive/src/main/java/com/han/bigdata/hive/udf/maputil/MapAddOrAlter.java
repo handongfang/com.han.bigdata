@@ -16,31 +16,51 @@ import java.util.Map;
  */
 public class MapAddOrAlter extends UDF {
     private Logger log = LoggerFactory.getLogger(MapAddOrAlter.class.getName());
+    private Map<String, String> map01;
 
     public MapAddOrAlter() {
     }
 
-    public Map<String, String> evaluate(Object map, Object key, Object value) {
+    public Map<String, String> evaluate(Object map, Object[] kv) {
         if (map == null || !(map instanceof Map)) {
-            return new HashMap<String, String>();
+            this.map01 = new HashMap<String, String>();
+        } else {
+            Map<String, Object> argument = (Map<String, Object>) map;
+            this.map01 = com.han.bigdata.hive.udf.maputil.MapUtil.mapKVTransform(argument); //值额外的处理（比如清洗部分歧义值）
         }
-        Map<String, Object> argument = (Map<String, Object>) map;
-        Map<String, String> map01 = com.han.bigdata.hive.udf.maputil.MapUtil.mapKVTransform(argument); //值额外的处理（比如清洗部分歧义值）
-        if (key != null && (key instanceof String) && !"".equals(key.toString())) {
-            String key01 = (String) key;
-            String value01 = "-"; //空值/串用'-'
-            if (value != null && value.toString().length() > 0) {
-                value01 =  value.toString();
+
+        int len = kv.length;
+        if (len >= 2) {
+            if (len % 2 != 0) {
+                log.warn("你输入的KV参数非偶数对：len={},将会丢弃最后一个参数：param:{}", len, kv[len - 1].toString());
             }
-            map01.put(key01, value01);
+            String key01;
+            String value01;
+            for (int index = 0; index < len - 1; index += 2) {
+                key01 = "-"; //空值串用'-'
+                value01 = "-"; //空值串用'-'
+                if (kv[index] != null && (kv[index] instanceof String) && !"".equals(kv[index].toString()))
+                    key01 = (String) kv[index];
+                if (kv[index + 1] != null && kv[index + 1].toString().length() > 0)
+                    value01 = kv[index + 1].toString();
+                if (!"-".equals(key01) || !"-".equals(value01)) //不能都为空
+                    map01.put(key01, value01);
+            }
+        } else {
+            log.warn("你输入的KV参数过少：len={},不予添加", len);
         }
+
         return map01;
     }
 
     public static void main(String[] args) {
         MapAddOrAlter mapAddOrAlter = new MapAddOrAlter();
-        Map<String, String> evaluate = mapAddOrAlter.evaluate(new HashMap<>(), "a", "1");
-        System.out.println(mapAddOrAlter.evaluate(evaluate, "b", 2)); //添加
-        System.out.println(mapAddOrAlter.evaluate(evaluate, "a", 2)); //修改
+        Object[] kv1 = new Object[]{"a", "1"};
+        Object[] kv2 = new Object[]{"a", "2", "b", 2};
+        Object[] kv3 = new Object[]{"a", "2", "b", 2, "c"};
+        Map<String, String> evaluate = mapAddOrAlter.evaluate(new HashMap<>(), kv1);
+        System.out.println(evaluate);
+        System.out.println(mapAddOrAlter.evaluate(evaluate, kv2)); //添加&修改
+        System.out.println(mapAddOrAlter.evaluate(evaluate, kv3)); //非偶数队警告
     }
 }
