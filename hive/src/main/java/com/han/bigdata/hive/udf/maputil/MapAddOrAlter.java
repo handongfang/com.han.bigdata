@@ -58,7 +58,8 @@ public class MapAddOrAlter extends UDF {
         Object[] kv1 = new Object[]{"a", "1"};
         Object[] kv2 = new Object[]{"a", "2", "b", 2};
         Object[] kv3 = new Object[]{"a", "2", "b", 2, "c"};
-        Map<String, String> evaluate = mapAddOrAlter.evaluate(new HashMap<>(), kv1);
+//        Map<String, String> evaluate = mapAddOrAlter.evaluate(new HashMap<>(), kv1);
+        Map<String, String> evaluate = mapAddOrAlter.evaluate(null, kv1);
         System.out.println(evaluate);
         System.out.println(mapAddOrAlter.evaluate(evaluate, kv2)); //添加&修改
         System.out.println(mapAddOrAlter.evaluate(evaluate, kv3)); //非偶数队警告

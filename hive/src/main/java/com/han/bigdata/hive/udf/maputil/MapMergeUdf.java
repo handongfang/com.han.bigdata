@@ -1,5 +1,6 @@
 package com.han.bigdata.hive.udf.maputil;
 
+import com.alibaba.fastjson.JSONObject;
 import org.apache.hadoop.hive.ql.exec.UDF;
 import org.json.JSONException;
 import org.slf4j.Logger;
@@ -69,11 +70,12 @@ public class MapMergeUdf extends UDF {
     }
 
     public static void main(String[] args) throws JSONException {
-        com.han.bigdata.hive.udf.strutil.JsonStrToMapUdf ju = new com.han.bigdata.hive.udf.strutil.JsonStrToMapUdf();
-        Map<String, String> mapa = ju.evaluate("{\"nettype\":\"wifi\",\"uniqueid\":\"ca337ea5be29551ffb7dc9bc1141035c\",\"mac\":\"94:92:BC:DB:08:A6\",\"currentcid\":\"505\",\"official\":\"true\",\"idfa\":\"-\"} ");
-        Map<String, String> mapb = ju.evaluate("{\"CLICKID\":\"20905032-d535-4b04-9f24-ea7eb99ee08b\",\"GTID\":\"54cb0f81-5cd9-40e6-aa65-e80231429e9a\",\"PGTID\":\"0576ea80-efe5-4309-8d40-773791068cae\",\"sidDict\":{\"PGTID\":\"150834696198217116961581832\",\"GTID\":\"138741997198217116968252938\",\"userType\":1,\"isTelSecret\":0,\"onlyWeiLiao\":0},\"PCLICKID\":\"725ddac4-cfad-4671-86dd-9d76ea85444c\"}");
+        JSONObject jsonObject = JSONObject.parseObject("{\"nettype\":\"wifi\",\"uniqueid\":\"ca337ea5be29551ffb7dc9bc1141035c\",\"mac\":\"94:92:BC:DB:08:A6\",\"currentcid\":\"505\",\"official\":\"true\",\"idfa\":\"-\"}");
+        Map<String, String> map1 = jsonObject.toJavaObject(Map.class);
+        jsonObject = JSONObject.parseObject("{\"CLICKID\":\"20905032-d535-4b04-9f24-ea7eb99ee08b\",\"GTID\":\"54cb0f81-5cd9-40e6-aa65-e80231429e9a\",\"PGTID\":\"0576ea80-efe5-4309-8d40-773791068cae\",\"sidDict\":{\"PGTID\":\"150834696198217116961581832\",\"GTID\":\"138741997198217116968252938\",\"userType\":1,\"isTelSecret\":0,\"onlyWeiLiao\":0},\"PCLICKID\":\"725ddac4-cfad-4671-86dd-9d76ea85444c\"}");
+        Map<String, String> map2 = jsonObject.toJavaObject(Map.class);
         MapMergeUdf mmu = new MapMergeUdf();
-        Map c = mmu.mapMerge(new Object[]{mapa, mapb});
+        Map c = mmu.mapMerge(new Object[]{map1, map2});
         System.out.println(c);
     }
 }

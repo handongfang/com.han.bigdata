@@ -1,5 +1,7 @@
 package com.han.bigdata.hive.udf.strutil;
 
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import org.apache.hadoop.hive.ql.exec.UDF;
 import org.slf4j.Logger;
@@ -46,7 +48,7 @@ public class JsonStrToMapUdf extends UDF {
         Map<String, String> map = jsonStrToMapUdf.evaluate("{\"1\":\"A\",\"2\":\"B\",\"3\":\"C\"}");
         System.out.println(map);
         System.out.println("---------------------------------");
-        Map<String, String> map2 = jsonStrToMapUdf.evaluate("[{\"1\":\"A\",\"2\":\"B\",\"3\":\"C\"},{\"1\":\"Aa\",\"2\":\"B\",\"4\":\"C\"}]");
+        Map<String, String> map2 = jsonStrToMapUdf.evaluate("{\"array\":[{\"1\":\"A\",\"2\":\"B\",\"3\":\"C\"},{\"1\":\"Aa\",\"2\":\"B\",\"4\":\"C\"}]}");
         System.out.println(map2);
     }
 }

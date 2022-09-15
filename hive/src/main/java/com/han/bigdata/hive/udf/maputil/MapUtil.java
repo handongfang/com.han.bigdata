@@ -6,7 +6,7 @@ import java.util.Map;
 import java.util.Set;
 
 /**
- * @Description:
+ * @Description: map kv clean
  * @Author: HanDongFang
  * @CreateTime: 2022-06-07 19:04
  * @Version: 1.0
@@ -28,7 +28,7 @@ public class MapUtil {
                 if (null != key && !"".equals(key) && key.length() > 0 && !"null".equalsIgnoreCase(key)) {
                     String value = "-";
                     if (entry.getValue() != null && !"".equals(entry.getValue()) && !"null".equalsIgnoreCase(entry.getValue().toString())) {
-                        value = entry.getValue().toString().replaceAll("\t", " ");
+                        value = entry.getValue().toString().replaceAll("\t", " ").replaceAll("\n", " ").replaceAll("\r", " ");
                     }
                     m.put(key, value);
                 }
