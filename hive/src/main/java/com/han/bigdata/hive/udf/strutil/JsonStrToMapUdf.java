@@ -34,8 +34,18 @@ public class JsonStrToMapUdf extends UDF {
     private Map<String, String> JsonStrToMap(String jsonStr) {
         //不希望解析json报错则抓取异常返回null或空Map（最好是空Map，因为SQL中一般转换后直接取值或写入下游表，null值容易出错）
         try {
-            JSONObject jsonObject = JSONObject.parseObject(jsonStr);
-            Map<String, String> map = jsonObject.toJavaObject(Map.class);
+            Map<String, String> map = new HashMap<String,String>();
+            if(jsonStr.startsWith("[{")){
+                JSONArray jsonArray = JSONArray.parseArray(jsonStr);
+                //如果是json数组，则递归调用解析内部json（递归是担心内部还有json数组）
+                for (Object str : jsonArray) {
+                    map.putAll(JsonStrToMap(str.toString()));
+                }
+            }else{
+                JSONObject jsonObject = JSONObject.parseObject(jsonStr);
+                //map = jsonObject.toJavaObject(Map.class);
+                map.putAll(jsonObject.toJavaObject(Map.class));
+            }
             return map;
         } catch (Exception e) {
             log.error("json转换map失败:jsonStr=> {},Exception:{}", jsonStr, e.getMessage());
@@ -48,7 +58,7 @@ public class JsonStrToMapUdf extends UDF {
         Map<String, String> map = jsonStrToMapUdf.evaluate("{\"1\":\"A\",\"2\":\"B\",\"3\":\"C\"}");
         System.out.println(map);
         System.out.println("---------------------------------");
-        Map<String, String> map2 = jsonStrToMapUdf.evaluate("{\"array\":[{\"1\":\"A\",\"2\":\"B\",\"3\":\"C\"},{\"1\":\"Aa\",\"2\":\"B\",\"4\":\"C\"}]}");
+        Map<String, String> map2 = jsonStrToMapUdf.evaluate("[{\"1\":\"A\",\"2\":\"B\",\"3\":\"C\"},{\"1\":\"Aa\",\"2\":\"B\",\"4\":\"C\"}]");
         System.out.println(map2);
     }
 }

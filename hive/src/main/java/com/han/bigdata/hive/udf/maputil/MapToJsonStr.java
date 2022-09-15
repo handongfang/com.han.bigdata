@@ -3,6 +3,7 @@ package com.han.bigdata.hive.udf.maputil;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import org.apache.hadoop.hive.ql.exec.UDF;
+import org.apache.hadoop.io.Text;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -23,10 +24,10 @@ public class MapToJsonStr extends UDF {
     public MapToJsonStr() {
     }
 
-    public String evaluate(Object[] arguments) {
+    public Text evaluate(Object[] arguments) {
         String JsonStr = "{}";
         if (arguments == null || arguments.length < 1) {
-            return JsonStr;
+            return new Text(JsonStr);
         } else if (1 == arguments.length) {
             if (arguments[0] != null && arguments[0] instanceof Map) {
                 Map<String, Object> argument = (Map<String, Object>) arguments[0];
@@ -42,7 +43,7 @@ public class MapToJsonStr extends UDF {
             }
             JsonStr = strings.toString();
         }
-        return JsonStr;
+        return new Text(JsonStr);
     }
 
     public static void main(String[] args) {
@@ -53,13 +54,13 @@ public class MapToJsonStr extends UDF {
         map02.put("B", "2");
         map02.put("C", 3);
 
-        String evaluate = mapToJsonStr.evaluate(new Object[]{map01, map02});
-        System.out.println(evaluate);
-        JSONArray jsonArray = JSONObject.parseArray(evaluate);
+        Text evaluate = mapToJsonStr.evaluate(new Object[]{map01, map02});
+        System.out.println(evaluate.toString());
+        JSONArray jsonArray = JSONObject.parseArray(evaluate.toString());
         System.out.println(jsonArray.get(1));
 
-        String evaluate02 = mapToJsonStr.evaluate(null);
-        System.out.println(evaluate02);
+        Text evaluate02 = mapToJsonStr.evaluate(null);
+        System.out.println(evaluate02.toString());
 
     }
 }
